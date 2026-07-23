@@ -253,6 +253,20 @@ npm run dev
 If the variables are missing, the auth forms stay disabled and the page shows a
 configuration warning instead of opening an unauthenticated workspace.
 
+## Site CI
+
+`.github/workflows/site-ci.yml` runs `npm run smoke` in `site/` on pushes to
+`main` and on pull requests. The smoke check verifies that required site files
+exist, syntax-checks the site scripts, generates the auth config (disabled mode
+when Supabase variables are unset), resolves local references in `index.html`,
+and boots `server.cjs` for a request round trip. It is a static and smoke-level
+check for this prototype, not a browser test suite. Run it locally with:
+
+```powershell
+cd site
+npm run smoke
+```
+
 ## Project Structure
 
 ```text
