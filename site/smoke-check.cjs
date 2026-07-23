@@ -131,6 +131,13 @@ function delay(ms) {
 
 async function checkServer() {
   const port = Number(process.env.SMOKE_PORT || 4180);
+  try {
+    await get(`http://127.0.0.1:${port}/index.html`);
+    // Something already answers on the port; polling it would pass without
+    // testing this repo's server at all.
+    fail(`port ${port} is already in use; stop that server or set SMOKE_PORT`);
+    return;
+  } catch {}
   const server = spawn(process.execPath, ["server.cjs"], {
     cwd: root,
     env: { ...process.env, PORT: String(port) },
