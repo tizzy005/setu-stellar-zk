@@ -162,6 +162,32 @@ Regression tests cover:
 - Disclosure verifier malformed inputs.
 - Withdraw rejecting non-canonical public signals without storing a nullifier.
 
+## circom2soroban Conversion Audit
+
+`cli/circom2soroban` is the bridge that turns snarkjs Groth16 artifacts into the
+byte layout `libs/zk` deserializes on-chain. It has been audited and hardened:
+
+- **snarkjs assumptions**: artifacts must come from **snarkjs 0.7.x** on the
+  **BLS12-381** curve (the setup scripts run `snarkjs powersoftau new
+  bls12-381`). Default BN254 artifacts are not compatible and are rejected as
+  out-of-field values. Each G2 coordinate is read as snarkjs `[c0, c1]`, and the
+  projective `z` component of each point is intentionally ignored.
+- **Malformed inputs fail clearly**: the CLI now prints a specific error and
+  exits non-zero (instead of panicking) for unreadable files, invalid JSON,
+  non-decimal or out-of-field coordinates, points that are off-curve or outside
+  the prime-order subgroup, an `IC` array whose length does not match
+  `nPublic + 1`, non-decimal or oversized public signals, non-canonical public
+  signals (`>= r`, which the on-chain verifier would reject), and unknown
+  filetypes.
+- **Regression tests catch conversion drift** (`cargo test -p circom2soroban`):
+  VK, proof, and public-signal outputs are round-tripped back through the real
+  `zk` deserializers, plus a hand-derived golden vector pins the public-signal
+  byte encoding.
+
+Prototype limit: the point-encoding glue (`g1_from_coords` / `g2_from_coords`)
+is duplicated between the converter and `libs/zk/src/test.rs`; the two must stay
+in sync, and the round-trip tests exist to catch it if they drift.
+
 ## Run Locally
 
 Prerequisites:
