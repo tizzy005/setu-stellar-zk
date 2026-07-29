@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node build-config.cjs",
     "dev": "node server.cjs",
+    "smoke": "node smoke-check.cjs",
     "start": "npx serve .",
     "deploy": "npx vercel --prod"
   }
