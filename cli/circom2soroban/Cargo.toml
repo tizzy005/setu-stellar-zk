@@ -21,3 +21,4 @@ clap = { version = "4.0", features = ["derive"] }
 hex = "0.4"
 zk = { path = "../../libs/zk" }
 base64 = "0.21"
+thiserror = "1.0"
