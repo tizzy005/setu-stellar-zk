@@ -1084,3 +1084,37 @@ fn test_verify_disclosure_rejects_tampered_purpose() {
     .to_bytes(&env);
     assert_eq!(client.verify_disclosure(&proof, &tampered_bytes), false);
 }
+
+#[test]
+fn test_verify_disclosure_rejects_unspent_nullifier() {
+    let env = Env::default();
+    let (token_id, contract_id, admin) = setup_test_environment(&env);
+    let client = PrivacyPoolsContractClient::new(&env, &contract_id);
+    let token_client = MockTokenClient::new(&env, &token_id);
+
+    env.mock_all_auths();
+    client.set_disclosure_vk(&admin, &init_vk(&env));
+
+    let alice = Address::generate(&env);
+
+    token_client.mint(&alice, &1000000000);
+
+    let proof = init_proof(&env);
+    let pub_signals = init_pub_signals(&env);
+    let pub_signals_struct = PublicSignals::from_bytes(&env, &pub_signals).unwrap();
+    let commitment = pub_signals_struct.pub_signals.get(1).unwrap().to_bytes();
+    let association_root = pub_signals_struct.pub_signals.get(3).unwrap().to_bytes();
+
+    client.deposit(&alice, &commitment);
+    client.set_association_root(&admin, &association_root);
+
+    // Purposefully omit client.withdraw so the nullifier remains unspent.
+
+    // Assert verify_disclosure returns false for an unspent nullifier
+    let res = client.verify_disclosure(&proof, &pub_signals);
+    assert_eq!(res, false);
+
+    // Verify side effects
+    assert_eq!(token_client.balance(&contract_id), 1000000000); // the deposited commitment is still in contract
+    assert_eq!(client.get_nullifiers().len(), 0); // nullifiers list is empty
+}
