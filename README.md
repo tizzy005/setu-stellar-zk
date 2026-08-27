@@ -18,6 +18,12 @@ The product story is cross-border stablecoin remittance: payment privacy for
 families and small businesses, with an explicit compliance edge instead of a
 black-box mixer.
 
+> Prototype: this build runs on Stellar testnet, is not audited, and the proof
+> does not establish everything the story implies. Read
+> [Privacy & Compliance Limitations](docs/privacy-compliance-limitations.md)
+> for what the proofs prove, what they do not prove, the anchor/off-ramp mock
+> status, and the legal caveats.
+
 ## Live Testnet Deployment
 
 - Contract: `CDXLQFYQJVDXBZDI5QVYRAM5TGPMZQWS424FCQWYVNGSKSSHPU6XXAXT`
@@ -311,6 +317,11 @@ supabase/migrations/       Profiles table, trigger, and RLS policies
 ```
 
 ## Integration Boundaries
+
+For the full accounting of what the proofs do and do not guarantee — including
+why the receipt does not prove recipient/purpose were committed at deposit
+time, the zero-root association bypass, and the trusted-setup caveat — see
+[Privacy & Compliance Limitations](docs/privacy-compliance-limitations.md).
 
 - Fiat on-ramp and INR off-ramp are product-story stubs, not live anchor
   integrations.

@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node build-config.cjs",
-    "dev": "node server.cjs",
+    "build": "node init && node build-config.cjs",
+    "dev": "node init && node server.cjs",
     "smoke": "node smoke-check.cjs",
-    "start": "npx serve .",
+    "start": "node init && npx serve .",
     "deploy": "npx vercel --prod"
   }
 }
